@@ -1,0 +1,22 @@
+name: 每日 GitHub 热门推送
+on:
+  schedule:
+    - cron: '0 1 * * *' # 每天早上 9:00 (北京时间)
+  workflow_dispatch:
+
+jobs:
+  daily-trending:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 发送今日趋势
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            🚀 **今日 GitHub 热门趋势**
+            
+            1️⃣ 全球热门项目: https://github.com/trending
+            2️⃣ 中文热门项目: https://github.com/trending?spoken_language_code=zh
+            
+            *点击链接查看今天最火的代码库，保持技术嗅觉！*
