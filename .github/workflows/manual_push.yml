@@ -1,13 +1,16 @@
-name: 手动同步并推送TG
-on: 
-  workflow_dispatch: # 允许手动触发
+name: 自动同步并推送通知
+on:
+  schedule:
+    - cron: '0 10 * * *'  # 每天北京时间 18:00 自动检查 (10:00 UTC)
+  workflow_dispatch:      # 依然保留手动按钮，方便你想看就点
 
 jobs:
   sync-and-notify:
     runs-on: ubuntu-latest
     steps:
-      # 1. 检查并同步原作者仓库更新
+      # 1. 尝试从原作者仓库同步更新
       - name: Sync with Upstream
+        id: sync
         uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
         with:
           target_sync_branch: master
@@ -16,15 +19,15 @@ jobs:
           upstream_sync_repo: ruanyf/weekly
           test_mode: false
 
-      # 2. 同步完成后发消息通知
+      # 2. 如果有新内容同步成功，则发消息
       - name: Send Telegram notification
+        if: steps.sync.outputs.has_new_commits == 'true'
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            ✅ 科技爱好者周刊同步成功！
-            
-            已检查并同步原仓库最新内容。
-            你可以点击下方链接查看新文章：
-            https://github.com/${{ github.repository }}/tree/master/docs
+            🔔 **发现新更新！周刊已自动同步**
+
+            项目地址: https://github.com/${{ github.repository }}
+            你可以直接进入 docs 目录查看最新文章。
