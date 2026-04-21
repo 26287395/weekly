@@ -1,0 +1,18 @@
+name: 手动触发推送
+on: 
+  workflow_dispatch: # 这行代码负责在网页上显示“手动运行”按钮
+
+jobs:
+  test-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 发送测试消息到 Telegram
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            🚀 推送测试成功！
+            
+            你的 GitHub Actions 已经成功连接到了 Telegram 机器人。
+            项目地址: https://github.com/${{ github.repository }}
